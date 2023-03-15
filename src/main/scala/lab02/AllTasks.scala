@@ -97,7 +97,7 @@ object AllTasks extends App:
   println("\n>Compose test")
   println("Expected: " + 9 + ", Actual: " + compose(_ - 1, _ * 2)(5))
 
-  def genericCompose[A, B, C, D <: A](f: A => B, g: C => D): C => B = (x: C) => f(g(x))
+  def genericCompose[A, B, C, D <: A](f: A => B, g: C => D): C => B = x => f(g(x))
 
   def f1(s: String): Int = s.length
   def g1(s: String): String = s + " ciao"
@@ -134,10 +134,9 @@ object AllTasks extends App:
   // Task 3
   println("\n\nTask 3 test")
   @annotation.tailrec
-  def gcd(a: Int, b: Int): Int = (a, b) match
-    case (n, m) if n > m && m != 0 => gcd(m, n % m)
-    case (n, m) if m == 0 => n
-
+  def gcd(a: Int, b: Int): Int = b match
+    case 0 => a
+    case _ if a > b => gcd(b, a % b)
   println(">GCD test:")
   println("Expected: " + 4 + ", Actual: " + gcd(12, 8))
   println("Expected: " + 7 + ", Actual: " + gcd(14, 7))
@@ -203,17 +202,17 @@ object AllTasks extends App:
       case Some(a) => f(a)
       case _ => None()
 
-    def filter[A](opt: Option[A])(f: A => Boolean): Option[A] = (opt, f) match
-      case (Some(a), f) if f(a) => Some(a)
+    def filter[A](opt: Option[A])(f: A => Boolean): Option[A] = opt match
+      case Some(a) if f(a) => Some(a)
       case _ => None()
 
-    def map[A](opt: Option[A])(f: A => Boolean): Option[Boolean] = (opt, f) match
-      case (Some(a), f) => Some(f(a))
+    def map[A](opt: Option[A])(f: A => Boolean): Option[Boolean] = opt match
+      case Some(a) => Some(f(a))
       case _ => None()
 
-    def fold[A](opt: Option[A])(df: A)(f: A => A): A = (opt, df, f) match
-      case (Some(a), _, f) => f(a)
-      case (_, d, _) => d
+    def fold[A](opt: Option[A])(df: A)(f: A => A): A = (opt, df) match
+      case (Some(a), _) => f(a)
+      case (_, d) => d
 
   import Option.*
 
